@@ -15,6 +15,12 @@
             background-color: #f0f0f0;
         }
 
+        .warning {
+            color: red;
+            font-size: 1rem;
+            margin-top: 0.2rem;
+        }
+
         .container {
             background-color: white;
             padding: 2rem;
@@ -61,7 +67,8 @@
     <h1>Join {{.OrgName}}'s {{.TeamName}}</h1>
     <form action="/submit" method="post">
         <input type="text" name="username" placeholder="GitHub username" required>
-        <input type="password" name="password" placeholder="Invitation code" required>
+        <input type="password" name="inviteCode" placeholder="Invite code" required>
+        <p class="warning">Do not enter your GitHub password</p>
         <button type="submit">Get invited</button>
     </form>
 </div>

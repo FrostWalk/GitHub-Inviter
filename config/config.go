@@ -8,13 +8,13 @@ import (
 )
 
 type AppConfig struct {
-	OrgName   string
-	Token     string
-	GroupName string
-	Password  []byte
-	Port      string
-	TlsCert   string
-	TlsKey    string
+	OrgName    string //mandatory
+	Token      string //mandatory
+	GroupName  string //mandatory
+	InviteCode []byte //mandatory
+	Port       string //optional (default 8080)
+	TlsCert    string //optional
+	TlsKey     string //optional
 }
 
 var conf AppConfig
@@ -31,9 +31,9 @@ func Load() bool {
 		log.Fatal("GITHUB_TOKEN environment variable must be set")
 	}
 
-	password := strings.Trim(os.Getenv("PASSWORD_HASH"), " ")
-	if len(password) == 0 {
-		log.Fatal("PASSWORD environment variable must be set")
+	inviteCode := strings.Trim(os.Getenv("INVITE_CODE"), " ")
+	if len(inviteCode) == 0 {
+		log.Fatal("INVITE_CODE environment variable must be set")
 	}
 
 	groupName := strings.Trim(os.Getenv("GITHUB_GROUP_NAME"), " ")
@@ -48,13 +48,13 @@ func Load() bool {
 	}
 
 	conf = AppConfig{
-		OrgName:   orgName,
-		Token:     token,
-		GroupName: strings.ToLower(groupName),
-		Password:  hash.CalculateHash(password),
-		Port:      port,
-		TlsCert:   strings.Trim(os.Getenv("TLS_CERT"), " "),
-		TlsKey:    strings.Trim(os.Getenv("TLS_KEY"), " "),
+		OrgName:    orgName,
+		Token:      token,
+		GroupName:  strings.ToLower(groupName),
+		InviteCode: hash.CalculateHash(inviteCode),
+		Port:       port,
+		TlsCert:    strings.Trim(os.Getenv("TLS_CERT"), " "),
+		TlsKey:     strings.Trim(os.Getenv("TLS_KEY"), " "),
 	}
 	return len(os.Getenv("TLS_CERT")) > 0 && len(os.Getenv("TLS_KEY")) > 0
 }
@@ -71,8 +71,8 @@ func GroupName() string {
 	return conf.GroupName
 }
 
-func Password() []byte {
-	return conf.Password
+func InviteCode() []byte {
+	return conf.InviteCode
 }
 
 func Port() string {

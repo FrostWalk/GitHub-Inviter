@@ -9,21 +9,48 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 )
 
-func MainPage(w http.ResponseWriter, r *http.Request) {
-	// Fetch organization logo
-	logoURL, err := github.GetOrgLogo(config.OrgName())
+var (
+	templateCache *template.Template
+	logoCache     string
+	cacheMutex    sync.RWMutex
+)
+
+func initCache() error {
+	var err error
+	templateCache, err = template.ParseFiles("templates/index.html")
 	if err != nil {
-		http.Error(w, "Failed to fetch organization logo", http.StatusInternalServerError)
-		return
+		return err
 	}
 
-	// Parse and execute the template
-	tmpl, err := template.ParseFiles("templates/index.html")
+	logoCache, err = github.GetOrgLogoUrl(config.OrgName())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return err
+	}
+
+	return nil
+}
+
+func MainPage(w http.ResponseWriter, _ *http.Request) {
+	cacheMutex.RLock()
+	cachedTemplate := templateCache
+	cachedLogo := logoCache
+	cacheMutex.RUnlock()
+
+	if cachedTemplate == nil || cachedLogo == "" {
+		cacheMutex.Lock()
+		if templateCache == nil || logoCache == "" {
+			if initCache() != nil {
+				cacheMutex.Unlock()
+				http.Error(w, "Failed to initialize cache", http.StatusInternalServerError)
+				return
+			}
+		}
+		cachedTemplate = templateCache
+		cachedLogo = logoCache
+		cacheMutex.Unlock()
 	}
 
 	data := struct {
@@ -32,11 +59,11 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 		TeamName string
 	}{
 		OrgName:  config.OrgName(),
-		LogoURL:  logoURL,
+		LogoURL:  cachedLogo,
 		TeamName: config.GroupName(),
 	}
 
-	err = tmpl.Execute(w, data)
+	err := cachedTemplate.Execute(w, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -53,14 +80,14 @@ func Submit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
-	password := strings.Trim(r.FormValue("password"), " ")
-	if password == "" {
-		http.Error(w, "Invitation code is required", http.StatusBadRequest)
+	inviteCode := strings.Trim(r.FormValue("inviteCode"), " ")
+	if inviteCode == "" {
+		http.Error(w, "Invite code is required", http.StatusBadRequest)
 		return
 	}
-	if !hash.Compare(password, config.Password()) {
+	if !hash.Compare(inviteCode, config.InviteCode()) {
 		http.Error(w, "Invalid username or invitation code", http.StatusUnauthorized)
-		log.Printf("User: %s, tried to access with code: %s", username, password)
+		log.Printf("User: %s, tried to access with code: %s", username, inviteCode)
 		return
 	}
 

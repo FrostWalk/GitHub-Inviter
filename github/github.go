@@ -37,7 +37,7 @@ func AddUserToGroup(username string) error {
 	return nil
 }
 
-func GetOrgLogo(orgName string) (string, error) {
+func GetOrgLogoUrl(orgName string) (string, error) {
 	url := fmt.Sprintf("%s/orgs/%s", baseUrl, orgName)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
