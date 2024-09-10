@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"inviter/hash"
 	"log"
 	"os"
@@ -56,7 +57,19 @@ func Load() bool {
 		TlsCert:    strings.Trim(os.Getenv("TLS_CERT"), " "),
 		TlsKey:     strings.Trim(os.Getenv("TLS_KEY"), " "),
 	}
-	return len(os.Getenv("TLS_CERT")) > 0 && len(os.Getenv("TLS_KEY")) > 0
+
+	if len(conf.TlsCert) > 0 && len(conf.TlsKey) > 0 {
+		if _, err := os.Stat(conf.TlsCert); errors.Is(err, os.ErrNotExist) {
+			log.Fatalf("Certificate file: %s does not exist", conf.TlsCert)
+		}
+		if _, err := os.Stat(conf.TlsKey); errors.Is(err, os.ErrNotExist) {
+			log.Fatalf("Key file: %s does not exist", conf.TlsKey)
+		}
+
+		return true
+	}
+
+	return false
 }
 
 func OrgName() string {

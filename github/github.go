@@ -27,6 +27,11 @@ func AddUserToGroup(username string) error {
 	if err != nil {
 		return err
 	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		return fmt.Errorf("the token does not have the required permissions")
+	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -46,6 +51,7 @@ func GetOrgLogoUrl(orgName string) (string, error) {
 
 	req.Header.Set("Authorization", "Bearer "+config.Token())
 	req.Header.Set("Accept", "application/vnd.github+json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -53,6 +59,10 @@ func GetOrgLogoUrl(orgName string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		return "", fmt.Errorf("provided token is invalid")
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

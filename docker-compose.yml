@@ -1,0 +1,18 @@
+services:
+  github-inviter:
+    image: inviter:latest
+    environment:
+      - GITHUB_ORG_NAME=your-org-name
+      - GITHUB_TOKEN=your-github-token
+      - GITHUB_GROUP_NAME=your-team-name
+      - INVITE_CODE=your-invite-code
+      - PORT=8080
+      # Uncomment the following lines if you want to use TLS
+      # - TLS_CERT=/path/to/your/cert.pem
+      # - TLS_KEY=/path/to/your/key.pem
+    ports:
+      - "8080:8080"
+    # Uncomment the following lines if you want to use TLS
+    # volumes:
+    #   - /path/to/your/cert.pem:/path/to/your/cert.pem:ro
+    #   - /path/to/your/key.pem:/path/to/your/key.pem:ro

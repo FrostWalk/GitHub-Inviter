@@ -1,0 +1,7 @@
+gopath/
+.gitignore
+.idea/
+Dockerfile
+docker-compose.yml
+LICENSE
+README.md

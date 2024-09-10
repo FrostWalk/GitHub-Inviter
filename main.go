@@ -12,14 +12,21 @@ func main() {
 	// Load configuration
 	tlsEnable := config.Load()
 
-	// Serve static files
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
 	// Handle form submission
 	http.HandleFunc("/submit", handlers.Submit)
 
+	// Serve the success page
+	http.HandleFunc("/success", func(writer http.ResponseWriter, request *http.Request) {
+		http.ServeFile(writer, request, "static/success.html")
+	})
+
 	// Serve the main page
 	http.HandleFunc("/", handlers.MainPage)
+
+	err := handlers.InitCache()
+	if err != nil {
+		log.Fatalf("Error initializing cache: %v", err)
+	}
 
 	if tlsEnable {
 		fmt.Println("Server is running on https://127.0.0.1:" + config.Port())

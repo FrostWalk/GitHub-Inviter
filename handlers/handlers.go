@@ -18,18 +18,22 @@ var (
 	cacheMutex    sync.RWMutex
 )
 
-func initCache() error {
+func InitCache() error {
+	cacheMutex.RLock()
 	var err error
 	templateCache, err = template.ParseFiles("templates/index.html")
 	if err != nil {
+		cacheMutex.RUnlock()
 		return err
 	}
 
 	logoCache, err = github.GetOrgLogoUrl(config.OrgName())
 	if err != nil {
+		cacheMutex.RUnlock()
 		return err
 	}
 
+	cacheMutex.RUnlock()
 	return nil
 }
 
@@ -38,20 +42,6 @@ func MainPage(w http.ResponseWriter, _ *http.Request) {
 	cachedTemplate := templateCache
 	cachedLogo := logoCache
 	cacheMutex.RUnlock()
-
-	if cachedTemplate == nil || cachedLogo == "" {
-		cacheMutex.Lock()
-		if templateCache == nil || logoCache == "" {
-			if initCache() != nil {
-				cacheMutex.Unlock()
-				http.Error(w, "Failed to initialize cache", http.StatusInternalServerError)
-				return
-			}
-		}
-		cachedTemplate = templateCache
-		cachedLogo = logoCache
-		cacheMutex.Unlock()
-	}
 
 	data := struct {
 		OrgName  string
@@ -97,8 +87,5 @@ func Submit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = fmt.Fprintf(w, "User %s successfully added to the group %s in organization %s", username, config.GroupName(), config.OrgName())
-	if err != nil {
-		return
-	}
+	http.Redirect(w, r, "/success", http.StatusSeeOther)
 }

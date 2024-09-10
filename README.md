@@ -41,11 +41,11 @@ services:
       # - TLS_CERT=/path/to/your/cert.pem
       # - TLS_KEY=/path/to/your/key.pem
     ports:
-      - 8080:8080
+      - "8080:8080"
     # Uncomment the following lines if you want to use TLS
     # volumes:
-    #   - /path/to/your/cert.pem:/path/to/your/cert.pem
-    #   - /path/to/your/key.pem:/path/to/your/key.pem
+    #   - /path/to/your/cert.pem:/path/to/your/cert.pem:ro
+    #   - /path/to/your/key.pem:/path/to/your/key.pem:ro
 ```
 
 To run the application:
