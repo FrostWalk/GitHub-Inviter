@@ -1,6 +1,8 @@
 # GitHub Inviter
 
-GitHub Inviter is a web application that allows users to join a specific GitHub organization and team using an invitation code. The application provides a simple web interface where users can enter their GitHub username and the provided invitation code to get added to the organization's team.
+GitHub Inviter is a web application that allows users to join a specific GitHub organization and team using an
+invitation code. The application provides a simple web interface where users can enter their GitHub username and the
+provided invitation code to get added to the organization's team.
 
 ## Features
 
@@ -13,15 +15,15 @@ GitHub Inviter is a web application that allows users to join a specific GitHub 
 
 The application is configured using environment variables. Here are the available configuration options:
 
-| Environment Variable | Description | Required | Default |
-|----------------------|-------------|----------|---------|
-| `GITHUB_ORG_NAME` | The name of your GitHub organization | Yes | - |
-| `GITHUB_TOKEN` | GitHub personal access token with necessary permissions | Yes | - |
-| `GITHUB_GROUP_NAME` | The name of the team in your organization | Yes | - |
-| `INVITE_CODE` | The invitation code users need to provide | Yes | - |
-| `PORT` | The port on which the application will run | No | 8080 |
-| `TLS_CERT` | Path to the TLS certificate file | No | - |
-| `TLS_KEY` | Path to the TLS key file | No | - |
+| Environment Variable | Description                                             | Required | Default |
+|----------------------|---------------------------------------------------------|----------|---------|
+| `GITHUB_ORG_NAME`    | The name of your GitHub organization                    | Yes      | -       |
+| `GITHUB_TOKEN`       | GitHub personal access token with necessary permissions | Yes      | -       |
+| `GITHUB_GROUP_NAME`  | The name of the team in your organization               | Yes      | -       |
+| `INVITE_CODE`        | The invitation code users need to provide               | Yes      | -       |
+| `PORT`               | The port on which the application will run              | No       | 8080    |
+| `TLS_CERT`           | Path to the TLS certificate file                        | No       | -       |
+| `TLS_KEY`            | Path to the TLS key file                                | No       | -       |
 
 ## Running with Docker Compose
 
@@ -30,7 +32,8 @@ Here's an example `docker-compose.yml` file to run the GitHub Inviter:
 ```yaml
 services:
   github-inviter:
-    image: github-inviter:latest
+    container_name: github-inviter
+    image: ghcr.io/frostwalk/github-inviter:latest
     environment:
       - GITHUB_ORG_NAME=your-org-name
       - GITHUB_TOKEN=your-github-token
@@ -62,10 +65,12 @@ The application will be available at `http://127.0.0.1:8080` (or `https://127.0.
 
 ## About the token
 
-in order for this app to work, it needs an organization [Personal access token](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/managing-requests-for-personal-access-tokens-in-your-organization)
+in order for this app to work, it needs an
+organization [Personal access token](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/managing-requests-for-personal-access-tokens-in-your-organization)
 with read and write permissions on members.
-
 
 ### Credit
 
-Thanks to *[Code, Applied To Life](https://medium.com/code-applied-to-life/automated-github-organization-invites-3e940aa27040#.sikfvzyaj)* this app is heavily inspired by to their work.
+Thanks to
+*[Code, Applied To Life](https://medium.com/code-applied-to-life/automated-github-organization-invites-3e940aa27040#.sikfvzyaj)*
+this app is heavily inspired by to their work.
