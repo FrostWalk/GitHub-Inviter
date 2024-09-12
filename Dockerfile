@@ -1,17 +1,22 @@
-FROM golang:alpine as build
+FROM golang:alpine AS buildenv
 
-WORKDIR /go/src/app
+WORKDIR /go/src/build
 COPY . .
 
 RUN go mod download
 RUN go vet -v
 
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath -o /go/bin/app
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath -o inviter
 
 FROM gcr.io/distroless/static
 
-COPY --from=build /go/bin/app /
-ENTRYPOINT ["/app"]
+LABEL org.opencontainers.image.source=https://github.com/FrostWalk/GitHub-Inviter
+
+COPY --from=buildenv /go/src/build/inviter /app/inviter
+COPY --from=buildenv /go/src/build/static/ /app/static/
+COPY --from=buildenv /go/src/build/templates/ /app/templates/
+
+ENTRYPOINT ["/app/inviter"]
 
 ENV GITHUB_ORG_NAME=""
 ENV GITHUB_TOKEN=""

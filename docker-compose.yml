@@ -1,18 +1,19 @@
 services:
   github-inviter:
-    image: inviter:latest
+    container_name: github-inviter
+    image: ghcr.io/frostwalk/github-inviter:latest
     environment:
-      - GITHUB_ORG_NAME=your-org-name
-      - GITHUB_TOKEN=your-github-token
-      - GITHUB_GROUP_NAME=your-team-name
-      - INVITE_CODE=your-invite-code
+      - GITHUB_ORG_NAME=github-org-name
+      - GITHUB_TOKEN=github-token
+      - GITHUB_GROUP_NAME=github-org-group
+      - INVITE_CODE=secret-code
       - PORT=8080
       # Uncomment the following lines if you want to use TLS
-      # - TLS_CERT=/path/to/your/cert.pem
-      # - TLS_KEY=/path/to/your/key.pem
+      #- TLS_CERT=/cert.pem
+      #- TLS_KEY=/key.pem
     ports:
       - "8080:8080"
     # Uncomment the following lines if you want to use TLS
-    # volumes:
-    #   - /path/to/your/cert.pem:/path/to/your/cert.pem:ro
-    #   - /path/to/your/key.pem:/path/to/your/key.pem:ro
+    #volumes:
+    #  - /home/federico/ca.pem:/cert.pem:ro
+    #  - /home/federico/ca.key:/key.pem:ro
