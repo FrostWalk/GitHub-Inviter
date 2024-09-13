@@ -11,6 +11,9 @@ provided invitation code to get added to the organization's team.
 - Configurable for different GitHub organizations and teams
 - Optional TLS support for secure connections
 
+## Screenshot
+![Screenshot](/assets/images/index.png)
+
 ## Configuration
 
 The application is configured using environment variables. Here are the available configuration options:
@@ -67,10 +70,10 @@ The application will be available at `http://127.0.0.1:8080` (or `https://127.0.
 
 in order for this app to work, it needs an
 organization [Personal access token](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/managing-requests-for-personal-access-tokens-in-your-organization)
-with read and write permissions on members.
+with **read and write permissions on members.**
 
 ### Credit
 
 Thanks to
 *[Code, Applied To Life](https://medium.com/code-applied-to-life/automated-github-organization-invites-3e940aa27040#.sikfvzyaj)*
-this app is heavily inspired by to their work.
+this app is heavily inspired by their work.

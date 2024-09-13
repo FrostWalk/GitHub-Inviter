@@ -21,7 +21,7 @@ var (
 func InitCache() error {
 	cacheMutex.RLock()
 	var err error
-	templateCache, err = template.ParseFiles("templates/index.html")
+	templateCache, err = template.ParseFiles("./templates/index.html")
 	if err != nil {
 		cacheMutex.RUnlock()
 		return err

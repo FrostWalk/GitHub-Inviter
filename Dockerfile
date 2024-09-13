@@ -12,11 +12,11 @@ FROM gcr.io/distroless/static
 
 LABEL org.opencontainers.image.source=https://github.com/FrostWalk/GitHub-Inviter
 
-COPY --from=buildenv /go/src/build/inviter /app/inviter
-COPY --from=buildenv /go/src/build/static/ /app/static/
-COPY --from=buildenv /go/src/build/templates/ /app/templates/
+COPY --from=buildenv /go/src/build/inviter /inviter
+COPY --from=buildenv /go/src/build/static/ /static/
+COPY --from=buildenv /go/src/build/templates/ /templates/
 
-ENTRYPOINT ["/app/inviter"]
+CMD ["/inviter"]
 
 ENV GITHUB_ORG_NAME=""
 ENV GITHUB_TOKEN=""

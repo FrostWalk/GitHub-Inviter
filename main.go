@@ -17,7 +17,7 @@ func main() {
 
 	// Serve the success page
 	http.HandleFunc("/success", func(writer http.ResponseWriter, request *http.Request) {
-		http.ServeFile(writer, request, "static/success.html")
+		http.ServeFile(writer, request, "./static/success.html")
 	})
 
 	// Serve the main page
