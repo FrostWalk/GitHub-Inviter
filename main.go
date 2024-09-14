@@ -6,6 +6,7 @@ import (
 	"inviter/handlers"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -29,11 +30,22 @@ func main() {
 	}
 
 	if tlsEnable {
-		fmt.Println("Server is running on https://127.0.0.1:" + config.Port())
-		log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%s", config.Port()), config.TlsCert(), config.TlsKey(), nil))
+		go func() {
+			// Start HTTP server that redirects all traffic to HTTPS
+			log.Println("Starting HTTP to HTTPS redirect")
+			log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", config.HttpPort()), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// Redirect to HTTPS
+				index := strings.Index(r.Host, ":")
+				target := fmt.Sprintf("https://%s:%s%s", r.Host[:index], config.HttpsPort(), r.RequestURI)
+				http.Redirect(w, r, target, http.StatusMovedPermanently)
+			})))
+		}()
 
+		// Start HTTPS server
+		fmt.Println("Server is running on https://127.0.0.1:" + config.HttpsPort())
+		log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%s", config.HttpsPort()), config.TlsCert(), config.TlsKey(), nil))
 	} else {
-		fmt.Println("Server is running on http://127.0.0.1:" + config.Port())
-		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", config.Port()), nil))
+		fmt.Println("Server is running on http://127.0.0.1:" + config.HttpPort())
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", config.HttpPort()), nil))
 	}
 }

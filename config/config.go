@@ -13,7 +13,8 @@ type AppConfig struct {
 	Token      string //mandatory
 	GroupName  string //mandatory
 	InviteCode []byte //mandatory
-	Port       string //optional (default 8080)
+	HttpPort   string //optional (default 80)
+	HttpsPort  string //optional (default 443)
 	TlsCert    string //optional
 	TlsKey     string //optional
 }
@@ -43,9 +44,13 @@ func Load() bool {
 	}
 
 	// Set the optional environment variables, using defaults if not set
-	port := strings.Trim(os.Getenv("PORT"), " ")
-	if len(port) == 0 {
-		port = "8080"
+	httpPort := strings.Trim(os.Getenv("HTTP_PORT"), " ")
+	if len(httpPort) == 0 {
+		httpPort = "80"
+	}
+	httpsPort := strings.Trim(os.Getenv("HTTPS_PORT"), " ")
+	if len(httpsPort) == 0 {
+		httpsPort = "443"
 	}
 
 	conf = AppConfig{
@@ -53,7 +58,8 @@ func Load() bool {
 		Token:      token,
 		GroupName:  strings.ToLower(groupName),
 		InviteCode: hash.CalculateHash(inviteCode),
-		Port:       port,
+		HttpPort:   httpPort,
+		HttpsPort:  httpsPort,
 		TlsCert:    strings.Trim(os.Getenv("TLS_CERT"), " "),
 		TlsKey:     strings.Trim(os.Getenv("TLS_KEY"), " "),
 	}
@@ -88,8 +94,12 @@ func InviteCode() []byte {
 	return conf.InviteCode
 }
 
-func Port() string {
-	return conf.Port
+func HttpPort() string {
+	return conf.HttpPort
+}
+
+func HttpsPort() string {
+	return conf.HttpsPort
 }
 
 func TlsCert() string {

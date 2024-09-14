@@ -9,9 +9,10 @@ provided invitation code to get added to the organization's team.
 - Simple web interface for user input
 - Secure invitation process using a pre-defined invitation code
 - Configurable for different GitHub organizations and teams
-- Optional TLS support for secure connections
+- Optional TLS support for secure connections, with automatic redirect
 
 ## Screenshot
+
 ![Screenshot](/assets/images/index.png)
 
 ## Configuration
@@ -24,7 +25,8 @@ The application is configured using environment variables. Here are the availabl
 | `GITHUB_TOKEN`       | GitHub personal access token with necessary permissions | Yes      | -       |
 | `GITHUB_GROUP_NAME`  | The name of the team in your organization               | Yes      | -       |
 | `INVITE_CODE`        | The invitation code users need to provide               | Yes      | -       |
-| `PORT`               | The port on which the application will run              | No       | 8080    |
+| `HTTP_PORT`          | The port on which the application will run              | No       | 80      |
+| `HTTPS_PORT`         | The port on which the application will run (https)      | No       | 443     |
 | `TLS_CERT`           | Path to the TLS certificate file                        | No       | -       |
 | `TLS_KEY`            | Path to the TLS key file                                | No       | -       |
 
@@ -42,17 +44,19 @@ services:
       - GITHUB_TOKEN=your-github-token
       - GITHUB_GROUP_NAME=your-team-name
       - INVITE_CODE=your-invite-code
-      - PORT=8080
+      - HTTP_PORT=80
+      - HTTPS_PORT=443
       # Uncomment the following lines if you want to use TLS
       # - TLS_CERT=/path/to/your/cert.pem
       # - TLS_KEY=/path/to/your/key.pem
     ports:
-      - "8080:8080"
+      - "80:80"
     # Uncomment the following lines if you want to use TLS
+    #  - "443:443"
     # volumes:
-    #   - /path/to/your/cert.pem:/path/to/your/cert.pem:ro
-    #   - /path/to/your/key.pem:/path/to/your/key.pem:ro
-```
+    #  - /path/to/your/cert.pem:/path/to/your/cert.pem:ro
+    #  - /path/to/your/key.pem:/path/to/your/key.pem:ro
+  ```
 
 To run the application:
 

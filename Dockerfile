@@ -11,6 +11,8 @@ RUN CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath -o inviter
 FROM gcr.io/distroless/static
 
 LABEL org.opencontainers.image.source=https://github.com/FrostWalk/GitHub-Inviter
+LABEL org.opencontainers.image.description="linux/amd64"
+LABEL org.opencontainers.image.licenses=MIT
 
 COPY --from=buildenv /go/src/build/inviter /inviter
 COPY --from=buildenv /go/src/build/static/ /static/
@@ -24,4 +26,5 @@ ENV GITHUB_GROUP_NAME=""
 ENV INVITE_CODE=""
 ENV TLS_CERT=""
 ENV TLS_KEY=""
-ENV PORT="8080"
+ENV HTTP_PORT="80"
+ENV HTTPS_PORT="443"
