@@ -1,8 +1,8 @@
 # GitHub Inviter
 
-GitHub Inviter is a web application that allows users to join a specific GitHub organization and team using an
-invitation code. The application provides a simple web interface where users can enter their GitHub username and the
-provided invitation code to get added to the organization's team.
+GitHub Inviter is a web application that allows users to join a specific GitHub organization and a team (optional) using
+an invitation code (optional). The application provides a simple web interface where users can enter their
+GitHub username and the provided invitation code to get added to the organization's team.
 
 ## Features
 
@@ -14,6 +14,7 @@ provided invitation code to get added to the organization's team.
 ## Screenshot
 
 ![Screenshot](/assets/images/index.png)
+![Screenshot](/assets/images/success.png)
 
 ## Configuration
 
@@ -23,12 +24,20 @@ The application is configured using environment variables. Here are the availabl
 |----------------------|---------------------------------------------------------|----------|---------|
 | `GITHUB_ORG_NAME`    | The name of your GitHub organization                    | Yes      | -       |
 | `GITHUB_TOKEN`       | GitHub personal access token with necessary permissions | Yes      | -       |
-| `GITHUB_GROUP_NAME`  | The name of the team in your organization               | Yes      | -       |
-| `INVITE_CODE`        | The invitation code users need to provide               | Yes      | -       |
+| `GITHUB_GROUP_NAME`  | The name of the team in your organization               | No       | -       |
+| `INVITE_CODE_HASH`   | The invitation code users need to provide               | No       | -       |
 | `HTTP_PORT`          | The port on which the application will run              | No       | 80      |
 | `HTTPS_PORT`         | The port on which the application will run (https)      | No       | 443     |
 | `TLS_CERT`           | Path to the TLS certificate file                        | No       | -       |
 | `TLS_KEY`            | Path to the TLS key file                                | No       | -       |
+
+### How to generate the INVITE_CODE_HASH
+
+- On Linux:
+  - open a terminal
+  - write `echo -n 'invite code' | sha256sum` where *invite code* is your string **leave the '**
+- On any other:
+  - go [here](https://emn178.github.io/online-tools/sha256.html)
 
 ## Running with Docker Compose
 
@@ -43,10 +52,10 @@ services:
       - GITHUB_ORG_NAME=your-org-name
       - GITHUB_TOKEN=your-github-token
       - GITHUB_GROUP_NAME=your-team-name
-      - INVITE_CODE=your-invite-code
+      - INVITE_CODE_HASH=your-invite-code
       - HTTP_PORT=80
-      - HTTPS_PORT=443
       # Uncomment the following lines if you want to use TLS
+      # - HTTPS_PORT=443
       # - TLS_CERT=/path/to/your/cert.pem
       # - TLS_KEY=/path/to/your/key.pem
     ports:
@@ -68,7 +77,9 @@ To run the application:
 docker-compose up -d
 ```
 
-The application will be available at `http://127.0.0.1:8080` (or `https://127.0.0.1:8080` if TLS is configured).
+The application will be available at `http://127.0.0.1/` (or `https://127.0.0.1/` if TLS is configured)  unless
+otherwise
+specified with environment variables.
 
 ## About the token
 

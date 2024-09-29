@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Load configuration
-	tlsEnable := config.Load()
+	config.Load()
 
 	// Handle form submission
 	http.HandleFunc("/submit", handlers.Submit)
@@ -29,7 +29,7 @@ func main() {
 		log.Fatalf("Error initializing cache: %v", err)
 	}
 
-	if tlsEnable {
+	if config.IsTlsEnable() {
 		go func() {
 			// Start HTTP server that redirects all traffic to HTTPS
 			log.Println("Starting HTTP to HTTPS redirect")

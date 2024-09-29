@@ -11,8 +11,8 @@ import (
 type AppConfig struct {
 	OrgName    string //mandatory
 	Token      string //mandatory
-	GroupName  string //mandatory
-	InviteCode []byte //mandatory
+	GroupName  string //optional
+	InviteCode []byte //optional
 	HttpPort   string //optional (default 80)
 	HttpsPort  string //optional (default 443)
 	TlsCert    string //optional
@@ -21,7 +21,15 @@ type AppConfig struct {
 
 var conf AppConfig
 
-func Load() bool {
+type EnabledFeatures struct {
+	Code  bool
+	Tls   bool
+	Group bool
+}
+
+var features EnabledFeatures
+
+func Load() {
 	// Check for mandatory environment variables
 	orgName := strings.Trim(os.Getenv("GITHUB_ORG_NAME"), " ")
 	if len(orgName) == 0 {
@@ -33,14 +41,14 @@ func Load() bool {
 		log.Fatal("GITHUB_TOKEN environment variable must be set")
 	}
 
-	inviteCode := strings.Trim(os.Getenv("INVITE_CODE"), " ")
-	if len(inviteCode) == 0 {
-		log.Fatal("INVITE_CODE environment variable must be set")
+	groupName := strings.Trim(os.Getenv("GITHUB_GROUP_NAME"), " ")
+	if len(groupName) != 0 {
+		features.Group = true
 	}
 
-	groupName := strings.Trim(os.Getenv("GITHUB_GROUP_NAME"), " ")
-	if len(groupName) == 0 {
-		log.Fatal("GROUP_NAME environment variable must be set")
+	inviteCode := strings.Trim(os.Getenv("INVITE_CODE_HASH"), " ")
+	if len(inviteCode) != 0 {
+		features.Code = true
 	}
 
 	// Set the optional environment variables, using defaults if not set
@@ -57,7 +65,7 @@ func Load() bool {
 		OrgName:    orgName,
 		Token:      token,
 		GroupName:  strings.ToLower(groupName),
-		InviteCode: hash.CalculateHash(inviteCode),
+		InviteCode: hash.HexToByteArray(inviteCode),
 		HttpPort:   httpPort,
 		HttpsPort:  httpsPort,
 		TlsCert:    strings.Trim(os.Getenv("TLS_CERT"), " "),
@@ -72,10 +80,8 @@ func Load() bool {
 			log.Fatalf("Key file: %s does not exist", conf.TlsKey)
 		}
 
-		return true
+		features.Tls = true
 	}
-
-	return false
 }
 
 func OrgName() string {
@@ -108,4 +114,16 @@ func TlsCert() string {
 
 func TlsKey() string {
 	return conf.TlsKey
+}
+
+func IsTlsEnable() bool {
+	return features.Tls
+}
+
+func IsCodeRequired() bool {
+	return features.Code
+}
+
+func IsGroupEnable() bool {
+	return features.Group
 }

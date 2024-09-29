@@ -42,6 +42,37 @@ func AddUserToGroup(username string) error {
 	return nil
 }
 
+func AddUserToOrg(username string) error {
+	url := fmt.Sprintf("%s/orgs/%s/memberships/%s", baseUrl, config.OrgName(), username)
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer([]byte(`{"role":"member"}`)))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+config.Token())
+	req.Header.Set("Accept", "application/vnd.github+json")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		return fmt.Errorf("the token does not have the required permissions")
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("failed to add user to group: %s", string(body))
+	}
+
+	return nil
+}
+
 func GetOrgLogoUrl(orgName string) (string, error) {
 	url := fmt.Sprintf("%s/orgs/%s", baseUrl, orgName)
 	req, err := http.NewRequest("GET", url, nil)
